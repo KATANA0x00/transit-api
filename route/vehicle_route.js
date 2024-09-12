@@ -15,11 +15,11 @@ router.post("/create", async (req, res) => {
             Name: req.body.Name,
             Group: req.body.Group,
             Position: {
-                lat: 0,
-                lng: 0
+                lat: 0.0,
+                lng: 0.0
             },
             active: false,
-            Speed: 0
+            Speed: 0.0
         })
         await posts.save()
         res.status(200).json({ message: "200 OK!" });
@@ -44,13 +44,13 @@ router.put("/update/:vehicle_id", async (req, res) => {
         }
 
         if (req.body.Speed !== undefined) {
-            existingID.Speed = req.body.speed;
+            existingID.Speed = req.body.Speed;
         }
 
         const posts = new Stag({
             vehicle_ID: req.params.vehicle_id,
-            Position: existingID.Position,
-            // Speed: req.params.Speed
+            Position: req.body.lat !== undefined && req.body.lng !== undefined ? existingID.Position : {lat: 0.0, lng: 0.0},
+            Speed: req.body.Speed !== undefined ? existingID.Speed : 0.0
         })
 
         await existingID.save()
@@ -78,7 +78,7 @@ const checkUpdate = async () => {
 
         await Vehicle.updateMany(
             { ID: { $in: vehicleID }, active: true },
-            { $set: { active: false } }
+            { $set: { active: false, Speed: 0.0 } }
         );
 
     } catch (error) {
@@ -109,7 +109,7 @@ router.put("/edit/:vehicle_id", async (req, res) => {
         res.status(500).json({ message: "Error editing vehicle", error });
     }
 })
-
+//use
 router.get("/get/collection/:group_id", async (req, res) => {
     try {
         const vehicles = await Vehicle.find({ Group: req.params.group_id }, 'ID Name');
@@ -122,6 +122,36 @@ router.get("/get/collection/:group_id", async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Error editing vehicle", error });
+    }
+})
+//use
+router.get("/get/detail/:vehicle_id", async (req, res) => {
+    try {
+        const vehicles = await Vehicle.find({ ID: req.params.vehicle_id }, 'Name active Speed');
+        
+        if (vehicles.length === 0) {
+            return res.status(422).json({ message: "No vehicles found in this ID." });
+        }
+
+        res.status(200).json(vehicles[0]);
+
+    } catch (error) {
+        res.status(500).json({ message: "Error get vehicle", error });
+    }
+})
+//use
+router.get("/get/name/:vehicle_id", async (req, res) => {
+    try {
+        const vehicles = await Vehicle.find({ ID: req.params.vehicle_id }, 'Name');
+        
+        if (vehicles.length === 0) {
+            return res.status(422).json({ message: "No vehicles found in this ID." });
+        }
+
+        res.status(200).json(vehicles[0]);
+
+    } catch (error) {
+        res.status(500).json({ message: "Error get vehicle", error });
     }
 })
 
@@ -137,21 +167,6 @@ router.get("/get/position/:group_id", async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Error editing vehicle", error });
-    }
-})
-
-router.get("/get/detail/:vehicle_id", async (req, res) => {
-    try {
-        const vehicles = await Vehicle.find({ ID: req.params.vehicle_id }, 'Name active Speed');
-        
-        if (vehicles.length === 0) {
-            return res.status(422).json({ message: "No vehicles found in this group." });
-        }
-
-        res.status(200).json(vehicles);
-
-    } catch (error) {
-        res.status(500).json({ message: "Error get vehicle", error });
     }
 })
 
