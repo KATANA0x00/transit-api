@@ -111,6 +111,7 @@ router.put("/push/:station_id", upload.single('image'), async (req, res) => {
             return res.status(422).json({ message: "Station with this ID doesn't exists." });
         }
 
+        req.body.Position = JSON.parse(req.body.Position);
         const imgUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
         const newStation = {
             ...req.body,
@@ -219,7 +220,7 @@ router.get("/get/all/:station_id", async (req, res) => {
         res.status(500).json({ message: "Error get station", error });
     }
 })
-
+//use
 router.get("/get/position/:group_id", async (req, res) => {
     try {
         const stations = await Station.find({ Group: req.params.group_id }, 'ID Station.Name Station.Position');
@@ -228,7 +229,15 @@ router.get("/get/position/:group_id", async (req, res) => {
             return res.status(422).json({ message: "No stations found in this group." });
         }
 
-        res.status(200).json(stations);
+        const processedStations = stations[0].Station.map((station, idx) => {
+            return {
+                ID: stations[0].ID+'-'+idx,
+                Name: station.Name,
+                Position: station.Position
+            }
+        })
+
+        res.status(200).json(processedStations);
 
     } catch (error) {
         res.status(500).json({ message: "Error get station", error });

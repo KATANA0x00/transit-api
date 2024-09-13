@@ -15,11 +15,11 @@ router.post("/create", async (req, res) => {
             Name: req.body.Name,
             Group: req.body.Group,
             Position: {
-                lat: 0.0,
-                lng: 0.0
+                lat: 0.1,
+                lng: 0.1
             },
-            active: false,
-            Speed: 0.0
+            active: true,
+            Speed: 0.1
         })
         await posts.save()
         res.status(200).json({ message: "200 OK!" });
@@ -154,7 +154,7 @@ router.get("/get/name/:vehicle_id", async (req, res) => {
         res.status(500).json({ message: "Error get vehicle", error });
     }
 })
-
+//use
 router.get("/get/position/:group_id", async (req, res) => {
     try {
         const vehicles = await Vehicle.find({ Group: req.params.group_id }, 'ID Name Position');
