@@ -2,7 +2,7 @@ const express = require("express")
 const Vehicle = require("../models/vehicle_model")
 const Stag = require("../models/stag_model")
 const router = express.Router()
-
+//use
 router.post("/create", async (req, res) => {
     try {
         const existingID = await Vehicle.findOne({ ID: req.body.ID });
@@ -18,17 +18,22 @@ router.post("/create", async (req, res) => {
                 lat: 0.1,
                 lng: 0.1
             },
-            active: true,
+            active: false,
             Speed: 0.1
         })
         await posts.save()
+
+        const createUpdate = await Vehicle.findOne({ ID: req.body.ID });
+        createUpdate.Speed = 0;
+        await createUpdate.save()
+
         res.status(200).json({ message: "200 OK!" });
 
     } catch (error) {
         res.status(500).json({ message: "Error creating vehicle", error });
     }
 })
-
+//use
 router.put("/update/:vehicle_id", async (req, res) => {
     try {
         const existingID = await Vehicle.findOne({ ID: req.params.vehicle_id });
@@ -86,7 +91,7 @@ const checkUpdate = async () => {
     }
 };
 
-setInterval(checkUpdate, 1 * 60 * 1000);// M*S*MS
+setInterval(checkUpdate,1 * 60 * 1000);// M*S*MS
 
 router.put("/edit/:vehicle_id", async (req, res) => {
     try {
