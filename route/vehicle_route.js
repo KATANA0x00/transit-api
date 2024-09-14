@@ -2,6 +2,9 @@ const express = require("express")
 const Vehicle = require("../models/vehicle_model")
 const Stag = require("../models/stag_model")
 const router = express.Router()
+
+let updatedVehicleIDs = [];
+
 //use
 router.post("/create", async (req, res) => {
     try {
@@ -61,6 +64,10 @@ router.put("/update/:vehicle_id", async (req, res) => {
         await existingID.save()
         await posts.save()
 
+        if (!updatedVehicleIDs.includes(req.params.vehicle_id)) {
+            updatedVehicleIDs.push(req.params.vehicle_id);
+        }
+
         res.status(200).json({ message: "200 OK!" });
 
     } catch (error) {
@@ -69,22 +76,37 @@ router.put("/update/:vehicle_id", async (req, res) => {
 })
 
 const checkUpdate = async () => {
+    if (updatedVehicleIDs.length === 0) return;
     try {
-        const cutoffTime = Date.now() - 2 * 60 * 1000;// M*S*MS
+        const cutoffTime = Date.now() - 2 * 60 * 1000;
 
         const lastUpdate = await Stag.aggregate([
+            { $match: { vehicle_ID: { $in: updatedVehicleIDs } } },
             { $sort: { timestamp: -1 } },
             { $group: { _id: "$vehicle_ID", latestTimestamp: { $first: "$timestamp" } } }
         ]);
+        
+        console.log(lastUpdate);
 
-        const vehicleID = lastUpdate
+        const vehicleIDNotFound = updatedVehicleIDs.filter(id => !lastUpdate.some(log => log._id === id));
+
+        if (vehicleIDNotFound.length > 0) {
+            await Vehicle.updateMany(
+                { ID: { $in: vehicleIDNotFound }, active: true },
+                { $set: { active: false, Speed: 0.0 } }
+            );
+        }
+
+        const vehicleIDToDeactivate = lastUpdate
             .filter(log => log.latestTimestamp < cutoffTime)
             .map(log => log._id);
 
         await Vehicle.updateMany(
-            { ID: { $in: vehicleID }, active: true },
+            { ID: { $in: vehicleIDToDeactivate }, active: true },
             { $set: { active: false, Speed: 0.0 } }
         );
+
+        updatedVehicleIDs = updatedVehicleIDs.filter(id => !vehicleIDToDeactivate.includes(id));
 
     } catch (error) {
         console.error('Error checking for inactive vehicles', error);
