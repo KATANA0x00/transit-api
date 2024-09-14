@@ -70,7 +70,7 @@ router.put("/update/:vehicle_id", async (req, res) => {
 
 const checkUpdate = async () => {
     try {
-        const cutoffTime = Date.now() - 5 * 60 * 1000;// M*S*MS
+        const cutoffTime = Date.now() - 2 * 60 * 1000;// M*S*MS
 
         const lastUpdate = await Stag.aggregate([
             { $sort: { timestamp: -1 } },
@@ -91,7 +91,7 @@ const checkUpdate = async () => {
     }
 };
 
-setInterval(checkUpdate,1 * 60 * 1000);// M*S*MS
+setInterval(checkUpdate,0.5 * 60 * 1000);// M*S*MS
 
 router.put("/edit/:vehicle_id", async (req, res) => {
     try {
