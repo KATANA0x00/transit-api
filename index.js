@@ -20,7 +20,7 @@ mongoose
     .connect(MONGO_URL)
     .then(() => {
         
-        app.use("/position", vehicle_routes)
+        app.use("/positions", vehicle_routes)
         app.use("/api/vehicle", vehicle_routes)
         app.use("/api/route"  , route_routes  )
         app.use("/api/station", station_routes)
