@@ -14,13 +14,13 @@ const PORT = process.env.PORT || 3000;
 
 const app = express()
 app.use(express.json())
-app.use(cors());
+app.use(cors({origin: 'https://www.campustransit.eng.kmitl.ac.th'}));
 
 mongoose
     .connect(MONGO_URL)
     .then(() => {
         
-        app.use("/positions", vehicle_routes)
+        app.use("/positionspo", vehicle_routes)
         app.use("/api/vehicle", vehicle_routes)
         app.use("/api/route"  , route_routes  )
         app.use("/api/station", station_routes)
