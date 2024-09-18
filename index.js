@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 const app = express()
 app.use(express.json())
-app.use(cors({origin: 'https://www.campustransit.eng.kmitl.ac.th'}));
+app.use(cors());
 
 mongoose
     .connect(MONGO_URL)
