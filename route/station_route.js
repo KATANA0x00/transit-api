@@ -8,7 +8,7 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = '../uploads/';
+        const uploadDir = '../api/uploads/';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
