@@ -8,7 +8,7 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = '../api/uploads/';
+        const uploadDir = '../uploads/';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
@@ -91,7 +91,7 @@ router.put("/editidx/:station_id/:index", upload.single('image'), async (req, re
         }
 
         if (req.file) {
-            station.ImgUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+            station.ImgUrl = `${req.protocol}://${req.get('host')}/api/uploads/${req.file.filename}`;
         } else if (posts.ImgUrl !== undefined) {
             station.ImgUrl = posts.ImgUrl;
         }
