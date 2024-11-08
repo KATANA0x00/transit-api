@@ -112,7 +112,7 @@ router.put("/push/:station_id", upload.single('image'), async (req, res) => {
         }
 
         req.body.Position = JSON.parse(req.body.Position);
-        const imgUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
+        const imgUrl = req.file ? `${req.protocol}s://campustransit.eng.kmitl.ac.th/api/uploads/${req.file.filename}` : null;
         const newStation = {
             ...req.body,
             ImgUrl: imgUrl
