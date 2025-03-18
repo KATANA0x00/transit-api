@@ -91,7 +91,7 @@ router.put("/editidx/:station_id/:index", upload.single('image'), async (req, re
         }
 
         if (req.file) {
-            station.ImgUrl = `${req.protocol}s://campustransit.eng.kmitl.ac.th/api/uploads/${req.file.filename}`;
+            station.ImgUrl = `${req.protocol}s://www.campustransit.eng.kmitl.ac.th/uploads/${req.file.filename}`;
         } else if (posts.ImgUrl !== undefined) {
             station.ImgUrl = posts.ImgUrl;
         }
